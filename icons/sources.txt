@@ -1,0 +1,6 @@
+Table::   https://www.iconfinder.com/search/?q=table   Free to use
+New file:: Gtk::Image *table_image = Gtk::manage(new Gtk::Image{"./icons/table.png"}); GNU public
+New Folder :: http://www.iconarchive.com/tag/new-folder GNU public
+Trash Icon:: http://www.iconarchive.com/show/vista-general-icons-by-iconshock/trash-icon.html Non comercial use
+Documents:: http://www.iconarchive.com/show/mac-folders-icons-by-hopstarter/Documents-icon.html Commerical allowed
+Fodler Icon: http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/folder-icon.html Public domain license
