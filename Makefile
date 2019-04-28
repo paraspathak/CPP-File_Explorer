@@ -27,8 +27,11 @@ file.o: file.cpp *.h
 folder.o: folder.cpp *.h
 	$(CXX) $(CXXFLAGS) -c folder.cpp $(GTKFLAGS)
 
-fileexplorer: data.o folder.o file.o dialogs.o main_window.o main.o *.h 
-	$(CXX) $(CXXFLAGS) -o fileexplorer data.o file.o folder.o dialogs.o main_window.o main.o $(GTKFLAGS)
+algorithm.o: algorithm.cpp *.h
+	$(CXX) $(CXXFLAGS) -c algorithm.cpp $(GTKFLAGS)
+
+fileexplorer: data.o folder.o file.o dialogs.o algorithm.o main_window.o main.o *.h 
+	$(CXX) $(CXXFLAGS) -o fileexplorer data.o file.o folder.o dialogs.o algorithm.o main_window.o main.o $(GTKFLAGS)
 
 clean:
 	-rm -f *.gch *.o *~a.out ./fileexplorer ./a.out

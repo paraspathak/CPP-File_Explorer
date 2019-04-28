@@ -9,17 +9,16 @@ Gtk::Window* Dialogs::_window;
 
 
 std::string Dialogs::get_string(std::string dialog_name, std::string title){
-    Gtk::Dialog *dialog = Gtk::manage(new Gtk::Dialog());
+    Gtk::Dialog *dialog = (new Gtk::Dialog());
     dialog->set_title(title);
-    dialog->set_transient_for(*_window);
 
-    Gtk::Grid *grid = Gtk::manage(new Gtk::Grid());
+    Gtk::Grid *grid = (new Gtk::Grid());
     dialog->get_content_area()->pack_start(*grid);
 
-    Gtk::Label *label = Gtk::manage(new Gtk::Label(dialog_name));
+    Gtk::Label *label = (new Gtk::Label(dialog_name));
     label->show();
 
-    Gtk::Entry *entry = Gtk::manage(new Gtk::Entry());
+    Gtk::Entry *entry = (new Gtk::Entry());
     entry->set_vexpand(true);
     entry->set_text(dialog_name);
 
@@ -33,13 +32,18 @@ std::string Dialogs::get_string(std::string dialog_name, std::string title){
     int result = dialog->run();
     dialog->close();
     while (Gtk::Main::events_pending())  Gtk::Main::iteration();
-
+    std::string return_value;
     if(result){
-        return entry->get_text();
+        return_value = entry->get_text();
     }
     else {
-        return "0";
+        return_value = "0";
     }
+    delete entry;
+    delete label;
+    delete grid;
+    delete dialog;
+    return return_value;
 
 }
 
@@ -48,31 +52,6 @@ void Dialogs::properties_dialogue(std::string name, std::string path, std::strin
     dialog->set_title("Properties of "+name);
     dialog->set_default_size(300,300);
     dialog->set_transient_for(*_window);
-  
-  /*
-    Gtk::VBox* vbox = new Gtk::VBox();
-    vbox->set_vexpand(true);
-    vbox->set_hexpand(true);
-    dialog->add(*vbox);
-    auto r1= new Gtk::HBox(); vbox->add(*r1);
-    auto r2= new Gtk::HBox(); vbox->add(*r2);
-    auto r3= new Gtk::HBox(); vbox->add(*r3);
-    auto r4= new Gtk::HBox(); vbox->add(*r4);
-    auto r5= new Gtk::HBox(); vbox->add(*r5);
-    auto r6= new Gtk::HBox(); vbox->add(*r6);
-
-    
-    
-
-    delete r1;
-    delete r2;
-    delete r3;
-    delete r4;
-    delete r5;
-    delete r6;
-    delete vbox;
-*/
-    //dialog->set_parent_window(_window);
     Gtk::Grid* main_layout = Gtk::manage(new Gtk::Grid());
     dialog->get_content_area()->pack_start(*main_layout);
     std::string label_format_start="<span fgcolor='#ff0000'><b><big>";
@@ -112,7 +91,7 @@ void Dialogs::properties_dialogue(std::string name, std::string path, std::strin
      filetype_entry->set_use_markup(true);
     main_layout->attach_next_to(*filetype_label, *s1, Gtk::PositionType::POS_BOTTOM,50,5);
     main_layout->attach_next_to(*filetype_entry, *s2, Gtk::PositionType::POS_BOTTOM,50,5);
-    Gtk::Label * filesize_label = Gtk::manage(new Gtk::Label(label_format_start + "File Size = " + label_format_end));
+    Gtk::Label * filesize_label = Gtk::manage(new Gtk::Label(label_format_start + "File Size (in Test) = " + label_format_end));
      filesize_label->set_hexpand(true);
      filesize_label->set_use_markup(true);
     Gtk::Label * filesize_entry = Gtk::manage(new Gtk::Label(entry_format_start + file_size + entry_format_end));

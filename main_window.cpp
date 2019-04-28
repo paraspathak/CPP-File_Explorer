@@ -4,6 +4,7 @@
 
 
 Main_window::Main_window() {
+    Dialogs::set_window(this);
     set_default_size(900, 600);
     set_title("CSE 1325 File Explorer");
     //Create a managed grid and add it to the main window
@@ -31,7 +32,7 @@ Main_window::Main_window() {
 
           Gtk::MenuItem *menuitem_properties = Gtk::manage(new Gtk::MenuItem("_Properties",true));
           filemenu->append(*menuitem_properties);
-          menuitem_properties->signal_activate().connect([this]{Dialogs::set_window(this); Dialogs::properties_dialogue("home","/home/","Folder","55","10","100");});
+          menuitem_properties->signal_activate().connect([this]{this->properties_click();});
            Gtk::MenuItem *menuitem_open_terminal = Gtk::manage(new Gtk::MenuItem("_Open in Terminal",true));
           filemenu->append(*menuitem_open_terminal);
           menuitem_open_terminal->signal_activate().connect([this]{this->open_terminal_click();});
@@ -52,27 +53,41 @@ Main_window::Main_window() {
     menubar->append(*menuitem_edit);
     Gtk::Menu *editmenu = Gtk::manage(new Gtk::Menu());
     menuitem_edit->set_submenu(*editmenu);
+      Gtk::MenuItem *menuitem_new_file_edit = Gtk::manage(new Gtk::MenuItem("_New File",true));
+      editmenu->append(*menuitem_new_file_edit);
+      menuitem_new_file_edit->signal_activate().connect([this]{this->create_new_file_click();});
+      Gtk::MenuItem *menuitem_new_folder_edit = Gtk::manage(new Gtk::MenuItem("_New Folder",true));
+      editmenu->append(*menuitem_new_folder_edit);
+      menuitem_new_folder_edit->signal_activate().connect([this]{this->create_new_folder_click();});
+      Gtk::MenuItem *menuitem_rename_edit = Gtk::manage(new Gtk::MenuItem("_Rename",true));
+      editmenu->append(*menuitem_rename_edit);
+      menuitem_rename_edit->signal_activate().connect([this]{edit_mode =true; this->rename_data();});
+      Gtk::MenuItem *menuitem_duplicate_edit = Gtk::manage(new Gtk::MenuItem("_Duplicate",true));
+      editmenu->append(*menuitem_duplicate_edit);
+      menuitem_duplicate_edit->signal_activate().connect([this]{edit_mode =true; this->duplicate_data();});
+      Gtk::MenuItem *menuitem_add_to_bookmarks_edit = Gtk::manage(new Gtk::MenuItem("_Add to Bookmarks",true));
+      editmenu->append(*menuitem_add_to_bookmarks_edit);
+      menuitem_add_to_bookmarks_edit->signal_activate().connect([this]{edit_mode =true; this->add_to_bookmarks();});
+      Gtk::MenuItem *menuitem_remove_from_bookmarks_edit = Gtk::manage(new Gtk::MenuItem("_Remove from Bookmarks",true));
+      editmenu->append(*menuitem_remove_from_bookmarks_edit);
+      menuitem_remove_from_bookmarks_edit->signal_activate().connect([this]{edit_mode =true; this->delete_bookmarks();});
+      Gtk::MenuItem *menuitem_copy_edit = Gtk::manage(new Gtk::MenuItem("_Copy",true));
+      editmenu->append(*menuitem_copy_edit);
+      menuitem_copy_edit->signal_activate().connect([this]{copy_from = folder_path->path + selected_data; copy_name = selected_data; copy_over_cut = true; update_status_bar("Item Copied!");});
+      Gtk::MenuItem *menuitem_cut_edit = Gtk::manage(new Gtk::MenuItem("_Cut",true));
+      editmenu->append(*menuitem_cut_edit);
+      menuitem_cut_edit->signal_activate().connect([this]{copy_from = folder_path->path + selected_data; copy_name = selected_data; copy_over_cut = false; update_status_bar("Item cut!");});
+      Gtk::MenuItem *menuitem_paste_edit = Gtk::manage(new Gtk::MenuItem("_Paste",true));
+      editmenu->append(*menuitem_paste_edit);
+      menuitem_paste_edit->signal_activate().connect([this]{this->paste_click();});
 
-    Gtk::MenuItem *menuitem_new_file_edit = Gtk::manage(new Gtk::MenuItem("_New File",true));
-    editmenu->append(*menuitem_new_file_edit);
-    menuitem_new_file_edit->signal_activate().connect([this]{this->create_new_file_click();});
-    Gtk::MenuItem *menuitem_new_folder_edit = Gtk::manage(new Gtk::MenuItem("_New Folder",true));
-    editmenu->append(*menuitem_new_folder_edit);
-    menuitem_new_folder_edit->signal_activate().connect([this]{this->create_new_folder_click();});
-    Gtk::MenuItem *menuitem_rename_edit = Gtk::manage(new Gtk::MenuItem("_Rename",true));
-    editmenu->append(*menuitem_rename_edit);
-    menuitem_rename_edit->signal_activate().connect([this]{edit_mode =true; this->rename_data();});
-    Gtk::MenuItem *menuitem_duplicate_edit = Gtk::manage(new Gtk::MenuItem("_Duplicate",true));
-    editmenu->append(*menuitem_duplicate_edit);
-    menuitem_duplicate_edit->signal_activate().connect([this]{edit_mode =true; this->duplicate_data();});
-    Gtk::MenuItem *menuitem_add_to_bookmarks_edit = Gtk::manage(new Gtk::MenuItem("_Add to Bookmarks",true));
-    editmenu->append(*menuitem_add_to_bookmarks_edit);
-    menuitem_add_to_bookmarks_edit->signal_activate().connect([this]{edit_mode =true; this->add_to_bookmarks();});
-    Gtk::MenuItem *menuitem_remove_from_bookmarks_edit = Gtk::manage(new Gtk::MenuItem("_Remove from Bookmarks",true));
-    editmenu->append(*menuitem_remove_from_bookmarks_edit);
-    menuitem_remove_from_bookmarks_edit->signal_activate().connect([this]{edit_mode =true; this->delete_bookmarks();});
-
-
+    //right_click_menu= Gtk::manage(new Gtk::Menu());
+    //right_click_menu->append(*menuitem_new_file_edit);
+    //editmenu->append(*menuitem_new_folder_edit);
+    //editmenu->append(*menuitem_rename_edit);
+    //editmenu->append(*menuitem_duplicate_edit);
+    //editmenu->append(*menuitem_add_to_bookmarks_edit);
+    //editmenu->append(*menuitem_remove_from_bookmarks_edit);
 
     Gtk::MenuItem *menuitem_help = Gtk::manage(new Gtk::MenuItem("_Help", true));
     menubar->append(*menuitem_help);
@@ -122,6 +137,10 @@ Main_window::Main_window() {
     sep2->set_expand(true);
     toolbar->append(*sep2);
 
+    Gtk::SearchBar *search_bar = Gtk::manage(new Gtk::SearchBar());
+    search_entry = Gtk::manage(new Gtk::Entry());
+    search_entry->set_text("Enter files and folders to search");
+    search_bar->connect_entry(*search_entry);
 
     //Display the Current path of the folder
     label = Gtk::manage(new Gtk::Entry());
@@ -156,7 +175,8 @@ Main_window::Main_window() {
 
     grid->attach(*menubar, 0, 0, get_width(), 10);
     grid->attach_next_to(*toolbar, *menubar, Gtk::PositionType::POS_BOTTOM, get_width(), 10);
-    grid->attach_next_to(*label, *toolbar, Gtk::PositionType::POS_BOTTOM, get_width(), 10);
+    grid->attach_next_to(*search_bar, *toolbar,Gtk::PositionType::POS_BOTTOM, get_width(), 10);
+    grid->attach_next_to(*label, *search_bar, Gtk::PositionType::POS_BOTTOM, get_width(), 10);
     grid->attach_next_to(*bookmarkbar, *label, Gtk::PositionType::POS_BOTTOM, get_width(), 10);
 
     scrolledwindow = Gtk::manage(new Gtk::ScrolledWindow());
@@ -201,38 +221,39 @@ void Main_window::on_grid_button_click(std::string name_of_clicked_object){
       if(name_of_clicked_object.compare(e.name)==0){
         new_name = e.name;
         new_path = e.path + new_name + '/';
-        path_stack.push_back(new_name);
-        std::cout<<"Match found";
-        std ::string final_command = "cd";
-        final_command = final_command+ " "+ new_path;
-        const char * cmd = final_command.c_str();
-        if(system(cmd)==0){
-          std::cout<<"came here"<<e.name<<'\n';
-          //empty_grid();
-          //Main_window::populate_grid(new_name, new_path);
-          //update_status_bar("Opened a folder"); 
+        if(is_a_file(new_path)){
+          e.open();
+          new_name = folder_path->name;
+          new_path = folder_path->path;
+          update_status_bar("Opened a file");
         }          
-      else{
-        e.open();
-        new_name = folder_path->name;
-        new_path = folder_path->path;
-        update_status_bar("Opened a file");
-        }      
+        else {
+          path_stack.push_back(new_name);
+          update_status_bar("Opened a folder");       
+        } 
       }
     }
   }
   catch(std::exception& e){
     std::cout<<"Sometjing happened here"<<e.what();
-    //update_status_bar("Navigating to this folder encountered an error. Check privileeges");
+    update_status_bar("Navigating to this folder encountered an error. Check privileges");
   }
   empty_grid();
   Main_window::populate_grid(new_name, new_path);
-  update_status_bar("Opened a folder"); 
 }
 
 bool Main_window::is_a_folder(std::string filename){
   if(filename.find(".")!=std::string::npos) return false;
   else return true;
+}
+
+int Main_window::icons_type(std::string name){
+  if(name.find(".txt")!=std::string::npos) return 1;  // 1 corresponds with text image
+  if(name.find(".pdf")!=std::string::npos) return 2;  // 2 corresponds with pdf image
+  if(name.find(".")!=std::string::npos) return 3;     // 3 corresponds with hidden image
+  if(name.find(".cpp")!=std::string::npos) return 4;  // 4 corresponds with cpp image
+  if(name.find(".h")!=std::string::npos) return 5;    // 5 corresponds with h image
+  else return 6; //6 corresponds with rest of data icons
 }
 
 void Main_window::populate_grid(std::string name,std::string pathname){
@@ -241,23 +262,51 @@ void Main_window::populate_grid(std::string name,std::string pathname){
   for(auto e : folder_path->files_inside){    
     Gtk::Button* button_file = Gtk::manage(new Gtk::Button());
     if(is_a_folder(e.name)){
-      button_file->set_image(*folder_image);
+      Gtk::Image *fol = Gtk::manage(new Gtk::Image{"./icons/folder.png"});
+      button_file->set_image(*fol);
       button_file->set_image_position(Gtk::PositionType::POS_TOP);
       button_file->set_always_show_image(true);
     } 
     else{
-      button_file->set_image(*file_image);
+      int number = Main_window::icons_type(e.name);
+      Gtk::Image * fil;
+      switch (number)
+      {
+      case 1:
+        fil = Gtk::manage(new Gtk::Image{"./icons/txt.png"});
+        break;
+      case 2:
+        fil = Gtk::manage(new Gtk::Image{"./icons/pdf.png"});
+        break;
+      case 3:
+        fil = Gtk::manage(new Gtk::Image{"./icons/hidden.png"});
+        break;
+      case 4:
+        fil = Gtk::manage(new Gtk::Image{"./icons/cpp.png"});
+        break;
+      case 5:
+        fil = Gtk::manage(new Gtk::Image{"./icons/h.png"});
+        break;
+      case 6:
+        fil = Gtk::manage(new Gtk::Image{"./icons/data.png"});
+        break;
+      default:
+        break;
+      }
+      //Gtk::Image *fil = Gtk::manage(new Gtk::Image{"./icons/file.png"});
+      button_file->set_image(*fil);
       button_file->set_image_position(Gtk::PositionType::POS_TOP);
       button_file->set_always_show_image(true);
     } 
     button_file->set_label(e.name);
     button_file->set_focus_on_click(true);
-    //button_file->add_submenu(*right_click_menu);
+    //button_file->add(*right_click_menu);
     grid_button->attach(*button_file,column,row,1,1 );
     button_file->add_events(Gdk::BUTTON_PRESS_MASK);
     //selected_data=e.name;
-    //button_file->signal_button_press_event().connect_notify(sigc::slot(button_file, &Main_window::on_icons_click,this));
+    //button_file->signal_button_press_event().connect_notify(sigc::slot(*this, &Main_window::on_icons_click));
     button_file->signal_clicked().connect([this,button_file]{if(selected_data==button_file->get_label())this->on_grid_button_click(button_file->get_label());else{selected_data= button_file->get_label(); this->update_status_bar(button_file->get_label()+" Selected");} });
+    
     Main_window::buttons.push_back(button_file);
     //std::cout<<"Grid population here:"<<e.name<<'\n';  
     column++;
@@ -282,7 +331,6 @@ void Main_window::empty_grid(){
 
 void Main_window::back_button(){
   if(path_stack.back()!="/"){
-  //delete folder_path; //moved to empty grid
   path_stack.pop_back();
   std::string new_path;
   for(int i=0; i<path_stack.size();++i){
@@ -294,6 +342,7 @@ void Main_window::back_button(){
   std::string new_name = path_stack.back();
   update_status_bar("Directory changed back to parent"); 
   empty_grid();
+  selected_data = new_name;
   populate_grid(new_name,new_path);
   }
 }
@@ -315,8 +364,6 @@ void Main_window::create_new_file_click(){
     {
       update_status_bar("New File Creation Cancelled");
     }
-    
-    
     std::cout<<filename<<'\n';
   }
   catch(const std::exception& e)
@@ -326,7 +373,6 @@ void Main_window::create_new_file_click(){
   }
   std::string new_name= folder_path->name;
   std::string new_path= folder_path->path;
-  //delete folder_path;
   empty_grid();
   populate_grid(new_name,new_path );
 }
@@ -358,7 +404,6 @@ void Main_window::create_new_folder_click(){
   }
   std::string new_name= folder_path->name;
   std::string new_path= folder_path->path;
-  //delete folder_path;
   empty_grid();
   populate_grid(new_name,new_path );
 }
@@ -511,34 +556,63 @@ void Main_window::add_to_bookmarks(){
   
 }
 
-int Main_window::is_a_file(std::string path_name){
-try
-{
-  path_name = "cd " + path_name;
-  const char* cmd = path_name.c_str();
-  if(system(cmd)==0){
-    return 0;
-  } 
-  else {
-    return 1;
-  }
-}
-catch(const std::exception& e)
-{
-  std::cerr << e.what() << '\n';
-}
-return 0;
+bool Main_window::is_a_file(std::string path_name){
+  return !Algorithm::is_a_folder(path_name);
 }
 
 void Main_window::update_bookmarks_bar(){
 
 }
 
-void on_icons_click(Gtk::Button* button,GdkEventButton* event, Main_window* val){
+void on_icons_click(GdkEventButton* event){
   if(event->type == GDK_2BUTTON_PRESS){
     //on_grid_button_click(val->selected_data);
   }
   if(event->type == GDK_BUTTON_SECONDARY){
     std::cout<<"Right menu clicked";
   }
+}
+
+void Main_window::properties_click(){
+  Dialogs::set_window(this);
+  if(selected_data==folder_path->name){
+    Algorithm alg{folder_path->path};
+    Dialogs::properties_dialogue(folder_path->name,folder_path->path,alg.file_type(),std::to_string(alg.size_on_disk()),std::to_string(alg.number_of_folder()),std::to_string(alg.number_of_files()));  
+  }
+  else
+  {
+    std::string new_name = selected_data;
+    std::string new_path = folder_path->path+selected_data;
+    Algorithm alg{new_path};
+    Dialogs::properties_dialogue(new_name,new_path,alg.file_type(),std::to_string(alg.size_on_disk()),std::to_string(alg.number_of_folder()),std::to_string(alg.number_of_files()));
+  } 
+}
+
+
+void Main_window::paste_click(){
+  std::string command; 
+  std::string current_name= folder_path->name;
+  std::string current_path= folder_path->path;
+  if(copy_from != "0" && copy_over_cut) {
+    command = "cp -R -b " + copy_from + " " + folder_path->path ;
+  }
+  else if( copy_from !="0" && !copy_over_cut){
+    command = "mv -b " + copy_from + " " + folder_path->path ;
+  }
+  if(system(command.c_str())==0){
+    update_status_bar("Paste Successful!");
+  }
+  //If the item is currenlty in the bookmarks bar, the item is removed
+  //Need to write code to update the item
+  for(auto e : bookmarks_buttons){
+    if(e->get_label()==copy_name){
+      //auto a = e->get_image(); //Maybe get_widget?
+      bookmarkbar->remove(*e);
+      //auto new_item = Gtk::manage(new Gtk::ToolButton(*a));
+    }
+  }
+  copy_from="0";
+  copy_over_cut = true;
+  empty_grid();
+  populate_grid(current_name, current_path);
 }
