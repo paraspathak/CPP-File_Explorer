@@ -4,3 +4,7 @@ New Folder :: http://www.iconarchive.com/tag/new-folder GNU public
 Trash Icon:: http://www.iconarchive.com/show/vista-general-icons-by-iconshock/trash-icon.html Non comercial use
 Documents:: http://www.iconarchive.com/show/mac-folders-icons-by-hopstarter/Documents-icon.html Commerical allowed
 Fodler Icon: http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/folder-icon.html Public domain license
+CPP icon: https://icons8.com/icons/set/.cpp
+h icon: https://www.iconfinder.com/icons/314546/document_file_h_icon
+pdf icon: adobe.com 
+txt: https://www.iconfinder.com/icons/314556/document_file_txt_icon

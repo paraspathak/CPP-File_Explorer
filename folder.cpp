@@ -1,5 +1,8 @@
 #include "folder.h"
 
+typedef std::vector<File>::iterator iterator;
+typedef std::vector<File>::const_iterator const_iterator;
+  
 
 Folder::Folder(std::string filename, std::string path)
   : Data(filename, path)
@@ -11,30 +14,20 @@ Folder::Folder(std::string filename, std::string path)
     }
     else{
       while((dirp= readdir(dp))!=NULL){
-        //std::cout<<std::string(dirp->d_name)<<"\n";
         files_inside.push_back(File{std::string(dirp->d_name), path});
-          /*
-        std::string test_path = path + "/" + std::string(dirp->d_name)+ "/";
-        const char * cmd = test_path.c_str();
-        if(chdir(cmd)){
-          folder_inside.push_back(std::string(dirp->d_name));
-        }
-        else{
-          
-        }
-        */
-        
+      }
     }
-    }
-
     closedir(dp);
-  }
+}
 
-  void Folder::open (std::string _name, std::string _path){
-    name = _name;
-    path = _path;
-  }
+iterator Folder::begin(){
+  return files_inside.begin();
+}
 
-  Folder::~Folder(){
-    files_inside.clear();
-  }
+iterator Folder::end(){
+  return files_inside.end();
+}
+
+Folder::~Folder(){
+  files_inside.clear();
+}
