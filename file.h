@@ -8,11 +8,10 @@
 class File : public Data {
 public:
   File(std::string filename, std::string path_name);
+  ~File();
   void open();
-  void rename();
-  void delete_file();
-  void copy();
-  void cut();
+  void set_date_modified(std::string date);
+  std::string get_date_modified(std::string date);
 private:
   std::string date_modified;
 };

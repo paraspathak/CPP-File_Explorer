@@ -8,20 +8,19 @@
 #include "data.h"
 #include "file.h"
 
+//include typedefs
+typedef std::vector<File>::iterator iterator;
+typedef std::vector<File>::const_iterator const_iterator;
+
+//class description
 class Folder : public Data {
 public:
   Folder (std::string filename, std::string path);
-  std::vector <File> list_files();
-  void open (std::string name, std::string path);
-  void rename();
-  void delete_folder();
-  void copy();
-  void cut();
   ~Folder();
-  std::vector <File>    files_inside;
-  std::vector <std::string>  folder_inside; //to store the name of the folders
+  iterator begin();
+  iterator end();
 private:
-  //std::vector <File> files_inside;
+  std::vector <File> files_inside;
 
 };
 
