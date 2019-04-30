@@ -5,9 +5,6 @@ void Dialogs::set_window(Gtk::Window* window) {_window = window;}
 
 Gtk::Window* Dialogs::_window;
 
-
-
-
 std::string Dialogs::get_string(std::string dialog_name, std::string title){
     Gtk::Dialog *dialog = (new Gtk::Dialog());
     dialog->set_title(title);
@@ -131,4 +128,23 @@ void Dialogs::properties_dialogue(std::string name, std::string path, std::strin
     int result = dialog->run();
     dialog->close();
     while (Gtk::Main::events_pending())  Gtk::Main::iteration();
+}
+
+void Dialogs::help_dialog(Gtk::Window* window) {
+	std::string msg = R"( 
+						Double click twice to open a file
+						Click once to select a file
+						Go to edit menu to view options available
+						Add items to bookmarks bar
+						click save layout to remember your layout and bookmarks bar
+						)";
+	Gtk::MessageDialog* dialog = new Gtk::MessageDialog("Help");
+	dialog->set_transient_for(*window);
+	dialog->set_secondary_text(msg, true);
+	dialog->run();
+
+	dialog->close();
+	while (Gtk::Main::events_pending())  Gtk::Main::iteration();
+
+	delete dialog;
 }

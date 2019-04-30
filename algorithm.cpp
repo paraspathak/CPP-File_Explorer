@@ -34,14 +34,14 @@ int Algorithm::size_on_disk(){
   Algorithm::update_file_size();
   return Algorithm::size;
 }
-
+/*
 std::string Algorithm::breadth_first_search_whole(std::string file_name, std::string path_name){
   for(const auto& entry: std::filesystem::recursive_directory_iterator(path_name)){
     if(entry.path().filename()==file_name) return entry.path();
   }
   return "0";
 }
-
+*/
 std::string Algorithm::file_type(){
   if(is_a_folder(_path)) return "Folder";
   else return "File";

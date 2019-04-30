@@ -1,4 +1,4 @@
-#include "main_window.h"
+﻿#include "main_window.h"
 
 
 
@@ -104,8 +104,10 @@ Main_window::Main_window(bool initialize_bookmarks) {
     menuitem_help->set_submenu(*helpmenu);
     Gtk::MenuItem *menuitem_help_user = Gtk::manage(new Gtk::MenuItem("_Help",true));
     helpmenu->append(*menuitem_help_user);
+	menuitem_help_user->signal_activate().connect([this] {Dialogs::help_dialog(this); });
     Gtk::MenuItem *menuitem_about = Gtk::manage(new Gtk::MenuItem("_About",true));
-    helpmenu->append(*menuitem_about);
+	menuitem_about->signal_activate().connect([this] {this->about_dialog(); });
+	helpmenu->append(*menuitem_about);
 
     /*
       Toolbar Here! contains actions like new file, folder
@@ -734,4 +736,28 @@ void Main_window::paste_click(){
   copy_over_cut = true;
   empty_grid();
   populate_grid(current_name, current_path);
+}
+
+void Main_window::about_dialog() {
+	Gtk::AboutDialog dialog{};
+	dialog.set_transient_for(*this);
+	dialog.set_program_name("CPP File Explorer");
+	auto logo = Gdk::Pixbuf::create_from_file("./icons/logo.png");
+	dialog.set_logo(logo);
+	dialog.set_version("Version 1.0.0");
+	dialog.set_copyright("Copyright 2019");
+	dialog.set_license_type(Gtk::License::LICENSE_GPL_3_0);
+	std::vector< Glib::ustring > authors = { "Paras Pathak" };
+	dialog.set_authors(authors);
+	std::vector< Glib::ustring > artists = { "Table::   https://www.iconfinder.com/search/?q=table   Free to use",
+												"New Folder :: http://www.iconarchive.com/tag/new-folder GNU public",
+												"Trash Icon:: http://www.iconarchive.com/show/vista-general-icons-by-iconshock/trash-icon.html Non comercial use",
+												"Documents:: http://www.iconarchive.com/show/mac-folders-icons-by-hopstarter/Documents-icon.html Commerical allowed",
+												"Folder Icon: http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/folder-icon.html Public domain license",
+												"CPP icon: https://icons8.com/icons/set/.cpp",
+												"h icon: https://www.iconfinder.com/icons/314546/document_file_h_icon",
+												"pdf icon: adobe.com ",
+												"txt: https://www.iconfinder.com/icons/314556/document_file_txt_icon" };
+	dialog.set_artists(artists);
+	dialog.run();
 }

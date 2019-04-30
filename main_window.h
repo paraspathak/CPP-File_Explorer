@@ -56,6 +56,8 @@ protected:
     void search();
     void save();
 
+	void about_dialog();
+
 private:
     bool edit_mode;         //to distinguish if edited or not
     bool copy_over_cut;     //to know copy vs cut
