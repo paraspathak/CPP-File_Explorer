@@ -45,8 +45,8 @@ protected:
     void back_button();
     
     //Helper functions
-    bool is_a_file(std::string path_name);
-    bool is_a_folder(std::string filename);
+    bool is_a_file(std::string filename);
+    bool is_a_folder(std::string pathname);
     int icons_type(std::string name);
     
     //Additional features

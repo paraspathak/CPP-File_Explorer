@@ -1,5 +1,5 @@
 CXXFLAGS = --std=c++17
-GTKFLAGS = `/usr/bin/pkg-config gtkmm-3.0 --cflags --libs`
+GTKFLAGS = `pkg-config gtkmm-3.0 --cflags --libs`
 
 all: fileexplorer
 

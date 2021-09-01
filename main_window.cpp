@@ -172,7 +172,7 @@ Main_window::Main_window(bool initialize_bookmarks) {
     label->set_hexpand(true);
     label->signal_activate().connect([this]{this->update_to_a_path();});
     
-    std::string name = "home"; std::string path="/home/";
+    std::string name = "home"; std::string path="c:/";
     try
     {
       std::ifstream ist{"locale.txt"};
@@ -232,12 +232,12 @@ Main_window::Main_window(bool initialize_bookmarks) {
       
       //Home by defaults is bookmarked
       Gtk::Image *documents_image = Gtk::manage(new Gtk::Image{"./icons/documents.png"});
-      documents_image->set_tooltip_markup("/home/");
+      documents_image->set_tooltip_markup("c:/");
       Gtk::ToolButton *documents_button = Gtk::manage( new Gtk::ToolButton(*documents_image));
       documents_button->set_label("Home");
-      bookmarks_path.push_back("/home/");
+      bookmarks_path.push_back("c:/");
       bookmarks_buttons.push_back(documents_button);
-      documents_button->signal_clicked().connect([this]{if(this->selected_bookmark_data=="home"){this->empty_grid();this->populate_grid("Home","/home/");}else {this->selected_bookmark_data="home";}});
+      documents_button->signal_clicked().connect([this]{if(this->selected_bookmark_data=="home"){this->empty_grid();this->populate_grid("Home","c:/");}else {this->selected_bookmark_data="home";}});
       bookmarkbar->append(*documents_button);
     }
     //bookmarkbar->append(*trash_button);
@@ -281,7 +281,7 @@ Main_window::Main_window(bool initialize_bookmarks) {
     if(initialize_bookmarks){
       Main_window::path_stack.push_back("/");
       Main_window::path_stack.push_back("home");
-      populate_grid("home","/home/");
+      populate_grid("home","c:/");
     }
     populate_grid(name,path);
     
